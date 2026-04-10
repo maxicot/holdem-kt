@@ -1,0 +1,1 @@
+rootProject.name = "singly-linked-list"
