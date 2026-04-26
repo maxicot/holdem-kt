@@ -1,9 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.24"
+    application
 }
-
-group = "org.example"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -23,6 +21,14 @@ tasks.test {
     useJUnitPlatform()
 }
 
+application {
+    mainClass.set("MainKt")
+}
+
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.named<JavaExec>("run") {
+    standardInput = System.`in`
 }
