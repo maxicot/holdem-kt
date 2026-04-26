@@ -1,5 +1,3 @@
-//package org.holdem.engine.cards
-
 import kotlin.random.Random
 
 enum class Suit {

@@ -1,9 +1,3 @@
-//package org.holdem.engine.table
-/*
-import org.holdem.engine.GamePhase
-import org.holdem.engine.cards.*
-import org.holdem.interface.UserInterface
-*/
 import kotlin.properties.Delegates
 
 data class Player(

@@ -1,10 +1,3 @@
-//package org.holdem
-/*
-import kotlinx.coroutines.runBlocking
-import org.holdem.engine.TexasHoldemEngine
-import org.holdem.engine.table.Player
-import org.holdem.interface.terminal.TUI
-*/
 fun main() {
     val ui = TUI()
 

@@ -1,11 +1,3 @@
-//package org.holdem.interface.terminal
-/*
-import org.holdem.interface.UserInterface
-import org.holdem.engine.cards.*
-import org.holdem.engine.table.*
-import org.holdem.engine.GamePhase
-*/
-
 class TUI : UserInterface {
     override fun requestAction(player: Int): Player.Action {
         while (true) {

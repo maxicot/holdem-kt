@@ -1,10 +1,3 @@
-//package org.holdem.engine
-/*
-import org.holdem.engine.cards.*
-import org.holdem.engine.table.*
-import org.holdem.engine.handeval.*
-import org.holdem.interface.UserInterface
-*/
 import kotlin.random.Random
 
 enum class GamePhase {

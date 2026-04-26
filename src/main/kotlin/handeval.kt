@@ -1,8 +1,3 @@
-//package org.holdem.engine.handeval
-
-/*
-import org.holdem.engine.cards.*
-*/
 sealed class HandRank : Comparable<HandRank> {
     abstract val rankValue: Int
     abstract fun tieBreakerList(): List<Int>

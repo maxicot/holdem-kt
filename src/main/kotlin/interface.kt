@@ -1,9 +1,3 @@
-//package org.holdem.interface
-/*
-import org.holdem.engine.cards.Card
-import org.holdem.engine.table.Player
-import org.holdem.engine.GamePhase
-*/
 interface UserInterface {
     fun requestAction(player: Int): Player.Action
     fun onPotUpdate(newPot: UInt)
