@@ -20,6 +20,7 @@ class GUI : UserInterface {
     private var actionFuture: CompletableFuture<Player.Action>? = null
     private var currentPlayerIndex: Int = -1
     private var players: List<Player> = emptyList()
+    private var currentBet: UInt = 0u
 
     init {
         SwingUtilities.invokeAndWait { buildUI() }
@@ -78,21 +79,61 @@ class GUI : UserInterface {
         this.checkButton = JButton("Check")
         this.raiseButton = JButton("Raise")
 
-        this.foldButton.addActionListener { this.submitAction(Player.Action.Fold(currentPlayerIndex)) }
-        this.callButton.addActionListener { this.submitAction(Player.Action.Call(currentPlayerIndex)) }
-        this.checkButton.addActionListener { this.submitAction(Player.Action.Check(currentPlayerIndex)) }
+        this.foldButton.addActionListener {
+            this.submitAction(Player.Action.Fold(this.currentPlayerIndex))
+        }
+
+        this.callButton.addActionListener {
+            val player = players[currentPlayerIndex]
+            val toCall = currentBet - player.bet
+
+            if (player.stack < toCall) {
+                statusLabel.text = "Not enough chips to call"
+                return@addActionListener
+            }
+
+            this.submitAction(Player.Action.Call(this.currentPlayerIndex))
+        }
+
+        this.checkButton.addActionListener {
+            val player = players[this.currentPlayerIndex]
+
+            if (player.bet != currentBet) {
+                statusLabel.text = "Cannot check – bet is ${player.bet}, current bet is $currentBet"
+                return@addActionListener
+            }
+
+            this.submitAction(Player.Action.Check(this.currentPlayerIndex))
+        }
+
         this.raiseButton.addActionListener {
+            val player = players[this.currentPlayerIndex]
             val amountStr = JOptionPane.showInputDialog(frame, "Raise to:", "Raise", JOptionPane.QUESTION_MESSAGE)
 
-            if (amountStr != null) {
-                val amount = amountStr.toUIntOrNull()
-
-                if (amount != null) {
-                    this.submitAction(Player.Action.Raise(currentPlayerIndex, amount))
-                } else {
-                    this.appendLog("Invalid raise amount")
-                }
+            if (amountStr == null) {
+                return@addActionListener
             }
+
+            val amount = amountStr.toUIntOrNull()
+
+            if (amount == null) {
+                statusLabel.text = "Invalid raise amount"
+                return@addActionListener
+            }
+
+            if (amount <= this.currentBet) {
+                statusLabel.text = "Raise must be greater than current bet ($currentBet)"
+                return@addActionListener
+            }
+
+            val needed = amount - player.bet
+
+            if (player.stack < needed) {
+                statusLabel.text = "Not enough chips to raise to $amount"
+                return@addActionListener
+            }
+
+            this.submitAction(Player.Action.Raise(this.currentPlayerIndex, amount))
         }
 
         buttonPanel.add(foldButton)
@@ -273,6 +314,7 @@ class GUI : UserInterface {
     }
 
     override fun onBetUpdate(amount: UInt) {
+        this.currentBet = amount
         SwingUtilities.invokeLater { this.betLabel.text = "Bet: $amount" }
         this.appendLog("To call: $amount")
     }
