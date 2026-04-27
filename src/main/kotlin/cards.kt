@@ -69,12 +69,12 @@ data class Card(
     override fun toString(): String = "${this.rank.toSymbol()}${this.suit.toSymbol()}"
 }
 
-class Deck(private val random: Random = Random.Default) {
-    private val cards = Suit.values().flatMap { suit -> Rank.values().map { rank -> Card(suit, rank) } }.toMutableList()
+open class Deck(private val random: Random = Random.Default) {
+    protected val cards = Suit.values().flatMap { suit -> Rank.values().map { rank -> Card(suit, rank) } }.toMutableList()
 
-    fun shuffle() = cards.shuffle(random)
+    open fun shuffle() = cards.shuffle(random)
 
-    fun draw(): Card = cards.removeAt(cards.lastIndex)
+    open fun draw(): Card = cards.removeAt(cards.lastIndex)
 
-    fun draw(n: Int): List<Card> = List(n) { this.draw() }
+    open fun draw(n: Int): List<Card> = List(n) { this.draw() }
 }

@@ -10,14 +10,16 @@ enum class GamePhase {
 
 class TexasHoldemEngine(
     protected val ui: UserInterface,
-    protected val playerNames: List<String>,
+    protected val initialPlayers: List<Player>,
     protected val smallBlind: UInt = 5u,
     protected val bigBlind: UInt = smallBlind * 2u,
     protected val startingStack: UInt = bigBlind * 100u,
     protected val random: Random = Random.Default
 ) {
+    var deckOverride: Deck? = null
+
     protected val table: Table = Table(
-        players = playerNames.map { Player(it, startingStack) }.toMutableList(),
+        players = initialPlayers,
         button = 0,
         smallBlind = smallBlind,
         bigBlind = bigBlind,
@@ -46,9 +48,14 @@ class TexasHoldemEngine(
         this.table.pot = 0u
         this.table.board = emptyList()
         this.table.phase = GamePhase.PREFLOP
-        this.table.deck = Deck(random)
+        this.table.deck = deckOverride ?: Deck(random)
         this.table.deck.shuffle()
-        this.table.actingPlayer = (this.table.button + 3) % this.table.players.size
+
+        this.table.actingPlayer = if (this.table.players.size == 2) {
+            this.table.button
+        } else {
+            (this.table.button + 3) % this.table.players.size
+        }
 
         this.table.players.forEach {
             it.hole = this.table.deck.draw(2)
@@ -70,6 +77,7 @@ class TexasHoldemEngine(
         sb.contribution += sbAmount
         sb.bet = sbAmount
         ui.onPlayerAction(sb, Player.Action.Raise(sbIndex, this.table.smallBlind))
+        ui.onPlayerStackUpdate(sb)
 
         val bbIndex = (this.table.button + 2) % this.table.players.size
         val bb = this.table.players[bbIndex]
@@ -78,6 +86,7 @@ class TexasHoldemEngine(
         bb.contribution += bbAmount
         bb.bet = bbAmount
         ui.onPlayerAction(bb, Player.Action.Raise(bbIndex, this.table.bigBlind))
+        ui.onPlayerStackUpdate(bb)
 
         this.table.currentBet = this.table.bigBlind
         this.table.pot = sb.bet + bb.bet
@@ -108,6 +117,7 @@ class TexasHoldemEngine(
                 player.bet += amount
                 this.table.pot += amount
                 ui.onPlayerAction(player, action)
+                ui.onPlayerStackUpdate(player)
                 this.advanceTurn()
             }
             is Player.Action.Raise -> {
@@ -129,6 +139,7 @@ class TexasHoldemEngine(
                 this.playersThatActed.clear()
                 this.playersThatActed.add(action.index)
                 ui.onPlayerAction(player, action)
+                ui.onPlayerStackUpdate(player)
                 this.advanceTurn()
             }
             is Player.Action.Check -> {
@@ -144,6 +155,17 @@ class TexasHoldemEngine(
 
     protected fun advanceTurn() {
         this.playersThatActed.add(this.table.actingPlayer)
+
+        if (this.table.players.count { !it.folded } == 1) {
+            this.table.phase = GamePhase.SHOWDOWN
+            val winner = this.table.players.first { !it.folded }
+            winner.stack += table.pot
+            ui.notifyWinner(winner, this.table.pot)
+            this.table.pot = 0u
+            ui.onHandEnd()
+            return
+        }
+
         var next = (this.table.actingPlayer + 1) % this.table.players.size
 
         while (this.table.players[next].folded || this.table.players[next].isAllIn) {

@@ -1,4 +1,5 @@
 interface UserInterface {
+    fun getPlayers(): List<Player>
     fun requestAction(player: Int): Player.Action
     fun onPotUpdate(newPot: UInt)
     fun onBoardUpdate(cards: List<Card>)
@@ -6,7 +7,7 @@ interface UserInterface {
     fun onBetUpdate(amount: UInt)
     fun onActingPlayerUpdate(player: Player)
     fun onPlayerAction(player: Player, action: Player.Action)
-    fun onPlayerStackUpdate(player: Player, newStack: UInt)
+    fun onPlayerStackUpdate(player: Player)
     fun onHandStart(button: Int, smallBlind: UInt, bigBlind: UInt)
     fun onHandEnd()
     fun notifyWinner(player: Player, amount: UInt)

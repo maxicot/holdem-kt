@@ -1,9 +1,22 @@
-fun main() {
-    val ui = TUI()
+fun main(args: Array<String>) {
+    val useGui = when {
+        "--gui" in args -> true
+        "--tui" in args -> false
+        else -> {
+            println("use flag --gui to run in GUI mode and --tui for TUI mode")
+            System.console() == null
+        }
+    }
+
+    val ui = if (useGui) {
+        GUI()
+    } else {
+        TUI()
+    }
 
     val engine = TexasHoldemEngine(
         ui = ui,
-        playerNames = listOf("Alice", "Bob", "John"),
+        initialPlayers = ui.getPlayers()
     )
 
     ui.onMessage("Welcome to Texas Hold'em!")

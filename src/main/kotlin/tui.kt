@@ -1,4 +1,53 @@
 class TUI : UserInterface {
+    override fun getPlayers(): List<Player> {
+        val players = mutableListOf<Player>()
+        println("Enter player data (name and, optionally, stack - 1000 if omitted);\nEmpty line when done.")
+
+        while (true) {
+            print("> ");
+            val input = readln().trim()
+
+            if (input.isEmpty()) {
+                if (players.size >= 2) {
+                    break
+                } else {
+                    println("At least 2 players required.")
+                    continue
+                }
+            }
+
+            val parts = input.split(" ", limit = 2)
+            val name = parts[0]
+
+            if (name.isEmpty()) {
+                println("Name cannot be blank.")
+                continue
+            }
+
+            if (players.any { it.name == name }) {
+                println("Name already taken. Try again.")
+                continue
+            }
+
+            val stack: UInt = if (parts.size == 2) {
+                val parsed = parts[1].toUIntOrNull()
+
+                if (parsed == null) {
+                    println("The amount must be a positive integer.")
+                    continue
+                } else {
+                    parsed
+                }
+            } else {
+                1000u
+            }
+
+            players.add(Player(name, stack))
+        }
+
+        return players
+    }
+
     override fun requestAction(player: Int): Player.Action {
         while (true) {
             val input = readln().trim().lowercase()
@@ -11,6 +60,14 @@ class TUI : UserInterface {
             val command = parts[0]
 
             when (command) {
+                "exit" -> {
+                    print("Are you sure you want to exit the game? (yes/no): ")
+
+                    when (readln().lowercase().firstOrNull()) {
+                        'y' -> System.exit(0)
+                        else -> continue
+                    }
+                }
                 "fold" -> return Player.Action.Fold(player)
                 "call" -> return Player.Action.Call(player)
                 "check" -> return Player.Action.Check(player)
@@ -30,7 +87,7 @@ class TUI : UserInterface {
                     return Player.Action.Raise(player, amount)
                 }
                 else -> {
-                    onMessage("Unknown command. Try: fold, call, check, raise <amount>")
+                    onMessage("Unknown command. Try: fold, call, check, raise <amount>, exit")
                     continue
                 }
             }
@@ -70,8 +127,8 @@ class TUI : UserInterface {
         println("${player.name} $actionStr")
     }
 
-    override fun onPlayerStackUpdate(player: Player, newStack: UInt) {
-        println("${player.name} stack: $newStack")
+    override fun onPlayerStackUpdate(player: Player) {
+        println("New stack of ${player.name}: ${player.stack}")
     }
 
     override fun onHandStart(button: Int, smallBlind: UInt, bigBlind: UInt) {
