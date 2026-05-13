@@ -1,1 +1,8 @@
-rootProject.name = "singly-linked-list"
+rootProject.name = "texas-holdem"
+
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
