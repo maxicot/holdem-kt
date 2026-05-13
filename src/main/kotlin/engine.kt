@@ -14,11 +14,13 @@ class TexasHoldemEngine(
     protected val smallBlind: UInt = 5u,
     protected val bigBlind: UInt = smallBlind * 2u,
     protected val startingStack: UInt = bigBlind * 100u,
-    protected val random: Random = Random.Default
+    protected val random: Random = Random.Default,
+    protected val handRecorder: HandRecorder? = null
 ) {
+    // for testing purposes
     var deckOverride: Deck? = null
 
-    protected val table: Table = Table(
+    protected val table: PokerTable = PokerTable(
         players = initialPlayers,
         button = 0,
         smallBlind = smallBlind,
@@ -44,6 +46,7 @@ class TexasHoldemEngine(
         }
     }
 
+    /** Start a new hand while preserving the set of players */
     fun newHand() {
         this.table.pot = 0u
         this.table.board = emptyList()
@@ -62,6 +65,7 @@ class TexasHoldemEngine(
             it.bet = 0u
             it.contribution = 0u
             it.folded = false
+            it.startingStack = it.stack
         }
 
         this.playersThatActed.clear()
@@ -162,6 +166,7 @@ class TexasHoldemEngine(
             winner.stack += table.pot
             ui.notifyWinner(winner, this.table.pot)
             this.table.pot = 0u
+            handRecorder?.recordHand(this.table.players, this.table.button)
             ui.onHandEnd()
             return
         }
@@ -230,6 +235,7 @@ class TexasHoldemEngine(
                     }
                 }
 
+                handRecorder?.recordHand(this.table.players, this.table.button)
                 ui.onHandEnd()
             }
             GamePhase.SHOWDOWN -> error("advancePhase called during SHOWDOWN")

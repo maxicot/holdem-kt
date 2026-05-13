@@ -1,3 +1,4 @@
+/** Implementation of communication with the players */
 interface UserInterface {
     fun getPlayers(): List<Player>
     fun requestAction(player: Int): Player.Action

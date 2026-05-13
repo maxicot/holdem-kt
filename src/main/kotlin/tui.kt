@@ -1,3 +1,4 @@
+/** A REPL-style UI */
 class TUI : UserInterface {
     override fun getPlayers(): List<Player> {
         val players = mutableListOf<Player>()

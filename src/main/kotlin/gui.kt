@@ -3,6 +3,7 @@ import java.awt.event.*
 import javax.swing.*
 import java.util.concurrent.CompletableFuture
 
+/** A graphical UI based on Swing */
 class GUI : UserInterface {
     private lateinit var frame: JFrame
     private lateinit var logArea: JTextArea

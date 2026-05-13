@@ -126,6 +126,7 @@ fun eval5(cards: List<Card>): HandRank {
     }
 }
 
+/** Find the best card combination available for a player */
 fun bestHand(hole: List<Card>, community: List<Card>): HandRank {
     require(hole.size == 2 && community.size == 5) {
         "Must provide 2 hole and 5 board cards"

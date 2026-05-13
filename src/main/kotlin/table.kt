@@ -7,6 +7,7 @@ data class Player(
     var hole: List<Card> = emptyList(),
     var folded: Boolean = false,
 ) {
+    var startingStack = stack
     var contribution: UInt = 0u
     val isAllIn: Boolean get() = this.stack == 0u
 
@@ -20,7 +21,7 @@ data class Player(
     }
 }
 
-data class Table(
+data class PokerTable(
     val players: List<Player>,
     var button: Int,
     val smallBlind: UInt,

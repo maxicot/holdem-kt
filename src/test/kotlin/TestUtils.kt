@@ -1,5 +1,6 @@
 import kotlin.random.Random
 
+/** A deck without random */
 class TestDeck(cards: List<Card>) : Deck(Random.Default) {
     private val iterator = cards.iterator()
 
@@ -8,6 +9,7 @@ class TestDeck(cards: List<Card>) : Deck(Random.Default) {
     override fun shuffle() {}
 }
 
+/** Controlled UI for tests */
 class ScriptedUI(actions: List<Player.Action>) : UserInterface {
     private val actions: MutableList<Player.Action> = actions.toMutableList()
     val messages = mutableListOf<String>()
